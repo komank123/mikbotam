@@ -91,19 +91,14 @@ class Routeros_API {
      *
      * @return boolean                If we are connected or not
      */
-    public function connect($ip, $login, $password, $portdata) {
-        if (empty($portdata)) {
-            $portdata = 8728 or 8729;
-        } else {
-            $portdata = $portdata;
-        }
-        
+    public function connect($ip, $login, $password)
+    {
         for ($ATTEMPT = 1; $ATTEMPT <= $this->attempts; $ATTEMPT++) {
             $this->connected = false;
             $PROTOCOL = ($this->ssl ? 'ssl://' : '' );
             $context = stream_context_create(array('ssl' => array('ciphers' => 'ADH:ALL', 'verify_peer' => false, 'verify_peer_name' => false)));
-            $this->debug('Connection attempt #' . $ATTEMPT . ' to ' . $PROTOCOL . $ip . ':' . $portdata . '...');
-            $this->socket = @stream_socket_client($PROTOCOL . $ip . ':' . $portdata, $this->error_no, $this->error_str, $this->timeout, STREAM_CLIENT_CONNECT,$context);
+            $this->debug('Connection attempt #' . $ATTEMPT . ' to ' . $PROTOCOL . $ip . ':' . $this->port . '...');
+            $this->socket = @stream_socket_client($PROTOCOL . $ip.':'. $this->port, $this->error_no, $this->error_str, $this->timeout, STREAM_CLIENT_CONNECT,$context);
             if ($this->socket) {
                 socket_set_timeout($this->socket, $this->timeout);
                 $this->write('/login', false);
@@ -578,6 +573,10 @@ return $format;
 
 function toBytes($i) {
     $bytes = ($i * 1000000);
+    return $bytes;
+}
+function toMB($i) {
+    $bytes = ($i * 1);
     return $bytes;
 }
 function Crusername($length) {
